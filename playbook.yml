@@ -5,7 +5,7 @@
   vars:
     db_name: mysqldb
     db_user: Pabby
-    pass_wd: Israel2535!
+    pass_wd: [Desrired Password]
 
   tasks:
     - debug:
