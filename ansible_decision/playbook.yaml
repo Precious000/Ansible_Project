@@ -1,0 +1,79 @@
+---
+- name: Installing docker
+  hosts: web01
+  become: yes
+  tasks:
+    - name: Updating apt packges
+      apt:
+        update_cache: yes
+
+    - name: Addding docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+
+    - name: Add GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add docker repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+
+    - name: Updating apt packges
+      apt:
+        update_cache: yes
+        
+      
+
+    - name: Installing Docker
+      apt:
+        name: docker-ce
+        state: present 
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    - name: Start & Enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Installing Packages
+  hosts: web02
+  become: yes
+  tasks:
+    - name:
+      apt:
+        update_cache: yes
+
+
+    - name: Installing various packages
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      loop:
+       - apache
+       - wget
+       - git
+       - zip 
+       - unzip
+      when:
+         ansible_host == "web02"
+
+    - name: Debug task
+      debug:
+        msg: "This task is performed on web01"
+
+
+    - name: Start and Enable apache
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
